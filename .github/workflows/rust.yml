@@ -9,17 +9,24 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+permissions:
+  checks: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: clippy
     - name: Clippy Action
       uses: auguwu/clippy-action@1.4.0
       with:
-        token: ${{ secrets.GITHUBTOKEN }}
-        check-args: --all-targets --all-features -- -D warnings
+        token: ${{ secrets.GITHUB_TOKEN }}
+        check-args: --all-targets --all-features -- -D warnings 
     - name: Build
       run: cargo build --verbose
     - name: Run tests
