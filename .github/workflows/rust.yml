@@ -5,13 +5,15 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  release:
+    types: [ created ]
 
 env:
   CARGO_TERM_COLOR: always
 
 permissions:
   checks: write
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -29,6 +31,83 @@ jobs:
     - name: Run Clippy
       run: cargo clippy --all-targets --all-features -- -D warnings
     - name: Build
-      run: cargo build --verbose
+      run: cargo build --verbose --release
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo test --verbose --release
+    - name: Upload Linux binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: oxygen-linux
+        path: target/release/oxygen
+        if-no-files-found: error
+
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+    - name: Build
+      run: cargo build --verbose --release
+    - name: Upload Windows binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: oxygen-windows
+        path: target/release/oxygen.exe
+        if-no-files-found: error
+
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+    - name: Build
+      run: cargo build --verbose --release
+    - name: Upload macOS binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: oxygen-macos
+        path: target/release/oxygen
+        if-no-files-found: error
+
+  publish-release:
+    needs: [build, build-windows, build-macos]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'created'
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Linux binary
+      uses: actions/download-artifact@v4
+      with:
+        name: oxygen-linux
+        path: linux
+    - name: Download Windows binary
+      uses: actions/download-artifact@v4
+      with:
+        name: oxygen-windows
+        path: windows
+    - name: Download macOS binary
+      uses: actions/download-artifact@v4
+      with:
+        name: oxygen-macos
+        path: macos
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          linux/oxygen
+          windows/oxygen.exe
+          macos/oxygen
+        token: ${{ secrets.GITHUB_TOKEN }}
