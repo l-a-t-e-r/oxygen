@@ -18,6 +18,7 @@ jobs:
     - name: Clippy Action
       uses: auguwu/clippy-action@1.4.0
       with:
+        token: ${{ secrets.GITHUBTOKEN }}
         check-args: --all-targets --all-features -- -D warnings
     - name: Build
       run: cargo build --verbose
