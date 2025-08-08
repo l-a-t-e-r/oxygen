@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oxygen - Video Sharing Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Oxygen</h1>
+        <input type="text" placeholder="Search...">
+    </header>
+    
+    <main>
+        <section id="trending">
+            <h2>Trending Videos</h2>
+            <div class="video-thumbnail">Video 1</div>
+            <div class="video-thumbnail">Video 2</div>
+            <div class="video-thumbnail">Video 3</div>
+        </section>
+        
+        <section id="upload">
+            <h2>Upload Video</h2>
+            <form id="uploadForm">
+                <input type="file" id="videoFile" required>
+                <input type="text" id="videoTitle" placeholder="Title" required>
+                <textarea id="videoDescription" placeholder="Description"></textarea>
+                <button type="submit">Upload</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="changelog.md">Change Log</a>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
